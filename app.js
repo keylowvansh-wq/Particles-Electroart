@@ -2,17 +2,20 @@ var cv = document.getElementById('cv');
 var c = cv.getContext('2d');
 var w, h;
 var pts = [];
+
 function handleResize(){
 w = cv.width = window.innerWidth;
 h = cv.height = window.innerHeight;
 c.fillStyle = '#050505';
 c.fillRect(0, 0, w, h);
 }
+
 window.addEventListener('resize', handleResize);
 handleResize();
+
 var palettes =[
 {
-h: 320, s: 80, l: 60 
+h: 320, s: 80, l: 60
 },
 {
 h: 190, s: 90, l: 50 
@@ -27,6 +30,7 @@ h: 280, s: 70, l: 55
 h: 120, s: 60, l: 45 
 }
 ];
+
 class P{
 constructor(){
 this.x = Math.random() * w;
@@ -38,7 +42,7 @@ this.maxLife = 100 + Math.random() * 150;
 this.size = Math.random() * 1.5 + 0.5;
 this.palIdx = Math.floor(Math.random() * palettes.length);
 }
-update(time, zoom){
+update(time, zoom, maxSpd){
 var nx = this.x * zoom;
 var ny = this.y * zoom;
 var n1 = Math.sin(nx + time);
@@ -48,10 +52,10 @@ var angle = (n1 * n2 + n3) * Math.PI * 4;
 this.vx += Math.cos(angle) * 0.15;
 this.vy += Math.sin(angle) * 0.15;
 var speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-var maxSpeed = 4;
-if(speed > maxSpeed){
-this.vx = (this.vx / speed) * maxSpeed;
-this.vy = (this.vy / speed) * maxSpeed;
+
+if(speed > maxSpd){
+this.vx = (this.vx / speed) * maxSpd;
+this.vy = (this.vy / speed) * maxSpd;
 }
 
 this.vx *= 0.98;
@@ -68,7 +72,6 @@ if(this.y < 0)
 this.y = h;
 if(this.y > h)
 this.y = 0;
-
 if(this.life > this.maxLife){
 this.x = Math.random() * w;
 this.y = Math.random() * h;
@@ -78,6 +81,7 @@ this.life = 0;
 this.palIdx = Math.floor(Math.random() * palettes.length);
  }
 }
+
 draw(){
 var lifeRatio = this.life / this.maxLife;
 var alpha = Math.sin(lifeRatio * Math.PI);
@@ -90,19 +94,38 @@ c.fillStyle = 'hsla(' + h + ', ' + s + '%, ' + l + '%, ' + alpha + ')';
 c.fillRect(this.x, this.y, this.size, this.size);
  }
 }
+
 for(var i = 0; i < 1500; i++){
 pts.push(new P());
 }
+
 var t = 0;
-var z = 0.005;
+var baseZ = 0.005;
+var baseSpd = 4;
+var uiSpd = document.getElementById('spd');
+var uiZm = document.getElementById('zm');
+var uiPal = document.getElementById('pal');
+
+uiPal.addEventListener('change', function(){
+var idx = parseInt(this.value);
+for(var i = 0; i < pts.length; i++){
+pts[i].palIdx = idx;
+}
+});
+
 function loop(){
 c.fillStyle = 'rgba(5, 5, 5, 0.05)';
 c.fillRect(0, 0, w, h);
+
+var currentSpd = parseFloat(uiSpd.value);
+var currentZm = parseFloat(uiZm.value) * 0.001;
 for(var i = 0; i < pts.length; i++){
-pts[i].update(t, z);
+pts[i].update(t, currentZm, currentSpd);
 pts[i].draw();
 }
+
 t += 0.005;
 requestAnimationFrame(loop);
 }
+
 loop();

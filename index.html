@@ -7,6 +7,26 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div id="ui">
+<div class="row">
+<label>Speed</label>
+<input type="range" id="spd" min="1" max="10" value="4">
+</div>
+<div class="row">
+<label>Zoom</label>
+<input type="range" id="zm" min="1" max="20" value="5">
+</div>
+<div class="row">
+<label>Palette</label>
+<select id="pal">
+<option value="0">Pink/Cyan</option>
+<option value="1">Neon</option>
+<option value="2">Gold</option>
+<option value="3">Purple</option>
+<option value="4">Forest</option>
+</select>
+</div>
+</div>
 <canvas id="cv"></canvas>
 <script src="app.js"></script>
 </body>
